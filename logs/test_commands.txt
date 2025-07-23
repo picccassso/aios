@@ -1,0 +1,95 @@
+# ARM64 OS Phase 3 Command Testing Script
+# Day 21 Task 1: Systematic testing of all 17 commands
+# 
+# Instructions:
+# 1. Boot the OS with ./run.sh
+# 2. Execute each command listed below
+# 3. Verify expected behavior and error handling
+# 4. Test edge cases and invalid inputs
+
+# === BASIC COMMANDS ===
+help
+help invalid_arg
+
+echo Hello World
+echo "Multiple words"
+echo
+
+clear
+
+# === MEMORY COMMANDS ===
+meminfo
+
+peek 0x40000000
+peek 4096
+peek 0x1000
+peek invalid_address
+peek 0xFFFFFFFF
+
+poke 0x1000 42
+poke 0x1000 0xFF byte
+poke 0x1000 0x1234 word
+poke 0x1000 0x12345678 long
+poke invalid_address 42
+
+dump 0x1000 64
+dump 0x1000 16
+dump invalid_address 32
+
+# === SYSTEM COMMANDS ===
+about
+uptime
+sysinfo
+color on
+color off
+color invalid
+
+reboot
+# (Type 'n' to cancel reboot)
+
+# === CALCULATION ===
+calc 2 + 3
+calc 10 - 4
+calc 5 * 6
+calc 20 / 4
+calc 100 % 7
+calc invalid_expression
+
+# === ADVANCED FEATURES ===
+history
+errors
+stats
+
+# Test aliases
+alias
+alias test "echo Alias works"
+test
+alias test
+
+# === INTERACTIVE FEATURES TO TEST ===
+# - Up/Down arrow keys for history
+# - Left/Right arrow keys for cursor movement
+# - Tab completion on partial commands
+# - Backspace and delete
+# - Home/End keys
+# - Command line editing
+
+# === BATCH COMMANDS ===
+echo First; echo Second
+echo Success && echo "Previous succeeded"
+echo Failure || echo "Previous failed"
+invalid_command || echo "Recovery worked"
+
+# === ERROR CONDITIONS ===
+invalid_command
+meminfo extra_args
+peek
+poke
+dump
+calc
+alias invalid syntax
+
+# === STRESS TEST ===
+# Execute multiple commands rapidly
+# Test memory allocation stability
+# Verify no crashes or hangs

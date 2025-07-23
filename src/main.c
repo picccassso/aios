@@ -38,9 +38,9 @@ void main(void)
     puts("");
     puts("Welcome to ARM64 OS!");
     puts("This is a minimal educational operating system");
-    puts("Features: Memory management, interactive shell, 7 commands");
+    puts("Features: Memory management, interactive shell, 17 commands");
     puts("");
-    puts("Available commands: help, echo, clear, meminfo, about, uptime, calc");
+    puts("Available commands: help, echo, clear, meminfo, about, uptime, calc, peek, poke, dump, color, reboot, sysinfo, history, errors, stats, alias");
     puts("Type 'help' for detailed command information");
     puts("Type 'about' for system information");
     puts("");
@@ -49,11 +49,12 @@ void main(void)
     char command_buffer[256];
     
     while (1) {
-        // Display shell prompt
-        printf("OS> ");
+        // Display shell prompt with color support
+        shell_display_prompt();
         
         // Read command line
         int len = shell_read_line(command_buffer, sizeof(command_buffer));
+        
         
         // Skip empty input
         if (len <= 0) {

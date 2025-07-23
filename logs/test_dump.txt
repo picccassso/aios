@@ -1,0 +1,2 @@
+dump 0x40094000 16
+EOF < /dev/null

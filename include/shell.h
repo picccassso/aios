@@ -31,6 +31,7 @@ typedef struct {
 
 // Shell function declarations
 void shell_init(void);
+void shell_display_prompt(void);
 int shell_read_line(char* buffer, int max_size);
 int shell_tokenize(const char* input, token_result_t* result);
 shell_command_t* shell_find_command(const char* name);
@@ -45,5 +46,15 @@ int cmd_meminfo(int argc, char* argv[]);
 int cmd_about(int argc, char* argv[]);
 int cmd_uptime(int argc, char* argv[]);
 int cmd_calc(int argc, char* argv[]);
+int cmd_peek(int argc, char* argv[]);
+int cmd_poke(int argc, char* argv[]);
+int cmd_dump(int argc, char* argv[]);
+int cmd_color(int argc, char* argv[]);
+int cmd_reboot(int argc, char* argv[]);
+int cmd_sysinfo(int argc, char* argv[]);
+int cmd_history(int argc, char* argv[]);
+int cmd_errors(int argc, char* argv[]);
+int cmd_stats(int argc, char* argv[]);
+int cmd_alias(int argc, char* argv[]);
 
 #endif // SHELL_H

@@ -107,12 +107,15 @@ static void put_hex(unsigned long value)
     char hex_chars[] = "0123456789abcdef";
     char buffer[17]; // 16 hex digits + null terminator
     int i = 15;
+    int start_pos;
     
     buffer[16] = '\0';
     
     // Handle zero case
     if (value == 0) {
-        puts("0x0");
+        putchar('0');
+        putchar('x');
+        putchar('0');
         return;
     }
     
@@ -123,13 +126,16 @@ static void put_hex(unsigned long value)
         i--;
     }
     
+    // Record where the actual hex digits start
+    start_pos = i + 1;
+    
     // Print 0x prefix
     putchar('0');
     putchar('x');
     
-    // Print hex digits
-    while (++i < 16) {
-        putchar(buffer[i]);
+    // Print only the actual hex digits (not uninitialized buffer)
+    for (int j = start_pos; j < 16; j++) {
+        putchar(buffer[j]);
     }
 }
 

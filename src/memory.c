@@ -83,7 +83,27 @@ memory_stats_t* get_memory_stats(void)
 }
 
 /*
- * Display memory information
+ * Helper function to calculate percentage (avoiding floating point)
+ * Returns percentage * 10 (so 50% = 500)
+ */
+static unsigned int calculate_percentage_x10(unsigned long used, unsigned long total)
+{
+    if (total == 0) return 0;
+    return (unsigned int)((used * 1000) / total);
+}
+
+/*
+ * Helper function to print decimal with one decimal place
+ */
+static void print_percentage(unsigned int pct_x10)
+{
+    unsigned int whole = pct_x10 / 10;
+    unsigned int decimal = pct_x10 % 10;
+    printf("%x.%x", whole, decimal);
+}
+
+/*
+ * Display memory information - enhanced with detailed statistics
  */
 void memory_info(void)
 {
@@ -92,13 +112,68 @@ void memory_info(void)
         return;
     }
     
-    puts("=== Memory Information ===");
-    printf("Heap start:      %x\n", (unsigned long)mem_stats.heap_start);
-    printf("Heap end:        %x\n", (unsigned long)mem_stats.heap_end);
-    printf("Current pointer: %x\n", (unsigned long)mem_stats.current_ptr);
-    printf("Total allocated: %x bytes\n", (unsigned long)mem_stats.total_allocated);
-    printf("Allocations:     %x\n", (unsigned long)mem_stats.num_allocations);
-    printf("Bytes remaining: %x bytes\n", (unsigned long)mem_stats.bytes_remaining);
+    puts("=== ARM64 OS Memory Information ===");
+    puts("");
+    
+    // Basic heap statistics
+    puts("HEAP STATISTICS:");
+    printf("  Start address:   %x\n", (unsigned long)mem_stats.heap_start);
+    printf("  End address:     %x\n", (unsigned long)mem_stats.heap_end);
+    printf("  Total size:      %x bytes (1MB)\n", HEAP_SIZE);
+    printf("  Current pointer: %x\n", (unsigned long)mem_stats.current_ptr);
+    puts("");
+    
+    // Allocation statistics
+    puts("ALLOCATION DETAILS:");
+    printf("  Total allocated: %x bytes\n", (unsigned long)mem_stats.total_allocated);
+    printf("  Bytes remaining: %x bytes\n", (unsigned long)mem_stats.bytes_remaining);
+    printf("  Number of allocs: %x\n", (unsigned long)mem_stats.num_allocations);
+    puts("");
+    
+    // Usage percentages
+    puts("MEMORY USAGE:");
+    unsigned int heap_used_pct = calculate_percentage_x10(mem_stats.total_allocated, HEAP_SIZE);
+    unsigned int heap_free_pct = calculate_percentage_x10(mem_stats.bytes_remaining, HEAP_SIZE);
+    printf("  Heap used:       ");
+    print_percentage(heap_used_pct);
+    puts("%");
+    printf("  Heap free:       ");
+    print_percentage(heap_free_pct);
+    puts("%");
+    puts("");
+    
+    // Memory map layout
+    puts("MEMORY MAP LAYOUT:");
+    printf("  Kernel code:     %x - %x\n", 0x40000000, (unsigned long)mem_stats.heap_start);
+    printf("  Heap region:     %x - %x\n", (unsigned long)mem_stats.heap_start, (unsigned long)mem_stats.heap_end);
+    printf("  Stack region:    ~%x - %x (estimated)\n", 0x40000000 - 0x10000, 0x40000000 - 1);
+    puts("");
+    
+    // Memory efficiency
+    puts("ALLOCATION EFFICIENCY:");
+    if (mem_stats.num_allocations > 0) {
+        unsigned long avg_alloc = mem_stats.total_allocated / mem_stats.num_allocations;
+        printf("  Average alloc:   %x bytes\n", avg_alloc);
+        
+        // Estimate fragmentation (simple calculation)
+        unsigned long used_space = mem_stats.current_ptr - mem_stats.heap_start;
+        unsigned long internal_frag = used_space - mem_stats.total_allocated;
+        unsigned int frag_pct = calculate_percentage_x10(internal_frag, used_space);
+        printf("  Internal frag:   %x bytes (", internal_frag);
+        print_percentage(frag_pct);
+        puts("%)");
+    } else {
+        puts("  No allocations yet");
+    }
+    puts("");
+    
+    // System memory estimates
+    puts("SYSTEM MEMORY ESTIMATES:");
+    unsigned long kernel_size = mem_stats.heap_start - 0x40000000;
+    printf("  Kernel size:     %x bytes\n", kernel_size);
+    printf("  Stack usage:     ~%x bytes (estimated)\n", 0x1000); // Rough estimate
+    printf("  UART buffers:    ~%x bytes (minimal)\n", 0x100);
+    puts("  System total:    ~1MB + kernel overhead");
 }
 
 /*

@@ -1,0 +1,3 @@
+help; echo Batch test 1; echo Batch test 2
+echo First command; echo Second command
+about; meminfo
