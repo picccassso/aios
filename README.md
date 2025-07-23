@@ -43,3 +43,8 @@ See `docs/` for complete information:
 ---
 
 *Demonstrates AI capabilities in systems programming - human-guided research with AI implementation.*
+
+
+## 🚫 License: Limited Permission
+
+You can clone and run this project, but you **cannot** reuse, republish, or modify it without permission.
